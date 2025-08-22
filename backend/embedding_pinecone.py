@@ -28,19 +28,40 @@ def get_jina_embedding(text: str):
 
     return response.json()["data"][0]["embedding"]
 
-# Skip Pinecone initialization for embedding script
-print("Pinecone initialization skipped. Please install the correct Pinecone package.")
-
-# Mock index to avoid errors
-class MockIndex:
-    def upsert(self, vectors):
-        print(f"Would upsert {len(vectors)} vectors to Pinecone (mocked)")
+# Initialize Pinecone using the modern API
+try:
+    from pinecone import Pinecone
+    pc = Pinecone(api_key=PINECONE_API_KEY)
     
-    def query(self, vector, top_k, include_metadata):
-        print(f"Would query for top {top_k} results (mocked)")
-        return {"matches": []}
+    # Check if index exists
+    indexes = pc.list_indexes()
+    if PINECONE_INDEX_NAME in indexes.names():
+        index = pc.Index(PINECONE_INDEX_NAME)
+        print(f"Successfully connected to Pinecone index: {PINECONE_INDEX_NAME}")
+    else:
+        print(f"Index {PINECONE_INDEX_NAME} does not exist. Creating mock index.")
+        # Mock index to avoid errors
+        class MockIndex:
+            def upsert(self, vectors):
+                print(f"Would upsert {len(vectors)} vectors to Pinecone (mocked)")
+            
+            def query(self, vector, top_k, include_metadata):
+                print(f"Would query for top {top_k} results (mocked)")
+                return {"matches": []}
 
-index = MockIndex()
+        index = MockIndex()
+except Exception as e:
+    print(f"Error connecting to Pinecone: {e}")
+    # Mock index to avoid errors
+    class MockIndex:
+        def upsert(self, vectors):
+            print(f"Would upsert {len(vectors)} vectors to Pinecone (mocked)")
+        
+        def query(self, vector, top_k, include_metadata):
+            print(f"Would query for top {top_k} results (mocked)")
+            return {"matches": []}
+
+    index = MockIndex()
 
 with open("json_data/parent.json", "r", encoding="utf-8") as f:
     parents = json.load(f)

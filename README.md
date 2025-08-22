@@ -157,14 +157,68 @@ The project includes configuration files for deployment options:
 
 ### Docker Deployment
 
-1. Build the Docker image:
+#### Using Docker Compose (Recommended)
+
+1. Make sure Docker and Docker Compose are installed:
    ```bash
-   docker build -t aira-app .
+   sudo apt update
+   sudo apt install docker.io docker-compose
+   sudo systemctl enable docker
+   sudo systemctl start docker
    ```
 
-2. Run the container:
+2. Deploy both frontend and backend services:
    ```bash
-   docker run -p 8000:8000 --env-file .env aira-app
+   docker-compose up -d
+   ```
+
+3. Access the application:
+   - Frontend: http://localhost:80
+   - Backend API: http://localhost:8000
+
+#### Using Docker Only
+
+1. Build the backend Docker image:
+   ```bash
+   docker build -t aira-backend .
+   ```
+
+2. Run the backend container:
+   ```bash
+   docker run -p 8000:8000 --env-file .env aira-backend
+   ```
+
+3. Build the frontend Docker image:
+   ```bash
+   cd frontend
+   docker build -t aira-frontend .
+   ```
+
+4. Run the frontend container:
+   ```bash
+   docker run -p 80:80 aira-frontend
+   ```
+
+### Systemd Service Deployment
+
+To run AIRA as a system service on Ubuntu:
+
+1. Make the deployment script executable:
+   ```bash
+   chmod +x deploy_service.sh
+   ```
+
+2. Run the deployment script:
+   ```bash
+   sudo ./deploy_service.sh
+   ```
+
+3. Manage the service:
+   ```bash
+   sudo systemctl status aira.service  # Check status
+   sudo systemctl stop aira.service    # Stop service
+   sudo systemctl start aira.service   # Start service
+   sudo journalctl -u aira.service -f  # View logs
    ```
 
 ### Railway Deployment
@@ -187,6 +241,99 @@ The project includes a `railway.toml` file for deploying to Railway.app.
 - Improve vector database management tools
 - Implement automated testing framework
 - Add support for custom knowledge bases
+
+## Deployment
+
+AIRA can be deployed using Docker and Docker Compose, making it easy to run in various environments. The application is containerized with separate containers for the frontend and backend components.
+
+### Prerequisites
+
+- Docker and Docker Compose installed
+- Pinecone API key and index setup
+- JINA API key for embeddings
+
+### Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_INDEX_NAME=your_pinecone_index_name
+JINA_API_KEY=your_jina_api_key
+PORT=8000  # Backend port
+```
+
+### Docker Deployment
+
+1. Build and start the containers:
+
+```bash
+docker-compose up -d
+```
+
+This will start the backend API on port 8000 and the frontend on port 3000.
+
+2. To stop the application:
+
+```bash
+docker-compose down
+```
+
+### Systemd Service Installation
+
+To run AIRA as a system service that starts automatically on boot:
+
+1. Make the installation script executable:
+
+```bash
+chmod +x install_service.sh
+```
+
+2. Run the installation script:
+
+```bash
+./install_service.sh
+```
+
+3. Manage the service:
+
+```bash
+# Start the service
+sudo systemctl start aira.service
+
+# Stop the service
+sudo systemctl stop aira.service
+
+# Restart the service
+sudo systemctl restart aira.service
+
+# Check service status
+sudo systemctl status aira.service
+```
+
+### Accessing the Application
+
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- Health Check: http://localhost:8000/health
+
+## Troubleshooting
+
+### Docker Permission Issues
+
+If you encounter permission issues when running Docker commands, add your user to the docker group and log out and back in:
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+### Pinecone Connection Issues
+
+Make sure your Pinecone API key is valid and the index exists. Check the backend logs for detailed error messages:
+
+```bash
+docker logs aira-backend
+```
 
 ## License
 

@@ -13,14 +13,17 @@ class RetrievePinecone:
         self.JINA_API_KEY = os.getenv("JINA_API_KEY")
         self.DIMENSION = 1024
 
-        # Initialize Pinecone using the standard API for the package
+        # Initialize Pinecone using the modern API
         try:
             # Check which API to use based on what's available
             logging.info("Initializing Pinecone connection")
-            pinecone.init(api_key=self.PINECONE_API_KEY)
+            
+            # New Pinecone client initialization
+            from pinecone import Pinecone
+            pc = Pinecone(api_key=self.PINECONE_API_KEY)
             
             # Connect to index
-            self.index = pinecone.Index(self.PINECONE_INDEX_NAME)
+            self.index = pc.Index(self.PINECONE_INDEX_NAME)
             logging.info(f"Successfully connected to Pinecone index: {self.PINECONE_INDEX_NAME}")
         except Exception as e:
             logging.error(f"Error connecting to Pinecone: {e}")

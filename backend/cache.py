@@ -15,21 +15,22 @@ class Cache:
         self.dimension = 1024
         
         try:
-            # Initialize Pinecone
-            pinecone.init(api_key=pinecone_api_key)
+            # Initialize Pinecone using the modern API
+            from pinecone import Pinecone
+            pc = Pinecone(api_key=pinecone_api_key)
             
             # Check if index exists, create if not
-            indexes = pinecone.list_indexes()
-            if self.index_name not in indexes:
+            indexes = pc.list_indexes()
+            if self.index_name not in indexes.names():
                 logging.info(f"Creating cache index '{self.index_name}'")
-                pinecone.create_index(
+                pc.create_index(
                     name=self.index_name,
                     dimension=self.dimension,
                     metric="cosine"
                 )
             
             # Initialize the index
-            self.index = pinecone.Index(self.index_name)
+            self.index = pc.Index(self.index_name)
             logging.info(f"Successfully connected to cache index: {self.index_name}")
         except Exception as e:
             logging.error(f"Error connecting to Pinecone cache: {e}")
