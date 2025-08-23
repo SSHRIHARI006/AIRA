@@ -13,7 +13,7 @@ RUN npm install
 COPY . .
 
 # Define build argument with default value
-ARG VITE_API_URL=http://localhost:8000
+ARG VITE_API_URL=http://localhost:7777
 ENV VITE_API_URL=${VITE_API_URL}
 
 # Build the application

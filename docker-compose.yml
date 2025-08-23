@@ -6,9 +6,9 @@ services:
     container_name: aira-backend
     restart: unless-stopped
     ports:
-      - "${PORT:-8000}:${PORT:-8000}"
+      - "${PORT:-7779}:${PORT:-7779}"
     environment:
-      - PORT=${PORT:-8000}
+      - PORT=${PORT:-7779}
       - PINECONE_API_KEY=${PINECONE_API_KEY}
       - PINECONE_ENVIRONMENT=${PINECONE_ENVIRONMENT}
       - PINECONE_INDEX_NAME=${PINECONE_INDEX_NAME}
@@ -18,7 +18,7 @@ services:
       - ./badal_db:/app/badal_db
       - ./cache_db:/app/cache_db
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-8000}/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-7779}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -28,11 +28,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - VITE_API_URL=http://backend:${PORT:-8000}
+        - VITE_API_URL=/api 
     container_name: aira-frontend
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "7777:80"
     depends_on:
       - backend
 
