@@ -21,9 +21,8 @@ function getEnvVar(name: string): string | undefined {
   return undefined;
 }
 
-// Get the base API URL from environment variables or fallback to default
-const BASE_API_URL = getEnvVar("VITE_API_URL") || "http://localhost:8000";
-const API_URL = `${BASE_API_URL}/query`;
+// API endpoint for queries
+const API_URL = `/query`;
 const USE_MOCK =
   (getEnvVar("VITE_USE_MOCK") === "1" || getEnvVar("VITE_USE_MOCK") === "true") ||
   (getEnvVar("REACT_APP_USE_MOCK") === "1" || getEnvVar("REACT_APP_USE_MOCK") === "true");
