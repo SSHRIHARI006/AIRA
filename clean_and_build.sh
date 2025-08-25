@@ -47,11 +47,15 @@ find . -name "*.log" -delete 2>/dev/null || true
 
 # Clear Node.js cache (if exists)
 echo "Clearing Node.js cache..."
-rm -rf frontend/node_modules 2>/dev/null || true
-rm -rf frontend/.next 2>/dev/null || true
-rm -rf frontend/dist 2>/dev/null || true
-rm -rf frontend/build 2>/dev/null || true
-npm cache clean --force 2>/dev/null || true
+sudo rm -rf frontend/node_modules 2>/dev/null || true
+sudo rm -rf frontend/.next 2>/dev/null || true
+sudo rm -rf frontend/dist 2>/dev/null || true
+sudo rm -rf frontend/build 2>/dev/null || true
+sudo npm cache clean --force 2>/dev/null || true
+
+# Clear npm cache globally
+sudo rm -rf ~/.npm 2>/dev/null || true
+sudo rm -rf /tmp/npm-* 2>/dev/null || true
 
 # Clear pip cache
 echo "Clearing pip cache..."
@@ -69,7 +73,10 @@ echo "Building everything from scratch..."
 if [ -d "frontend" ]; then
     echo "Installing Node.js dependencies..."
     cd frontend
-    npm install
+    # Fix ownership of frontend directory
+    sudo chown -R $USER:$USER .
+    # Install with proper permissions
+    npm install --no-optional
     cd ..
 fi
 
